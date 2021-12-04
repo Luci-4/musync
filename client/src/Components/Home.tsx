@@ -1,28 +1,8 @@
 import './Home.css';
-import {Navigate} from 'react-router';
 import {useState} from 'react'
-import { Origin } from './Manager';
 
-const playlists_url = "https://api.spotify.com/v1/tracks/2KrxsD86ARO5beq7Q0Drfqa";
 
-const fetchRequest = async (url: string) => {
-    console.log("connecting to the cock")
-    let res = await fetch(`http://localhost:3001/${url}`)
-    console.log(res)
-    let data = await res.json()
-    console.log(data)
-    return data
-}
-const getCode = () => {
-    // const code = getJsonFromUrl(window.location.href)
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    
-    const code = urlParams.get('code')
-    return code
-}
-
-const login = async (origin: Origin, setRedirect: Function, setUrl: Function) => {
+const login = async (setRedirect: Function, setUrl: Function) => {
     fetch('/users/hello')
     .then(res => res.json()) 
     .then(users => console.log(users))
@@ -46,7 +26,6 @@ const login = async (origin: Origin, setRedirect: Function, setUrl: Function) =>
 
 export default function Home(){
     const [redirect, setRedirect] = useState(false)
-    const [origin, setOrigin] = useState(Origin.Spotify)
     const [url, setUrl] = useState("undefined")
     if (redirect && url.length > 0){
         console.log("redirecting")
@@ -66,7 +45,7 @@ export default function Home(){
 
                 <button className='start-button' onClick={(e) => 
                     {
-                        login(origin, setRedirect, setUrl)
+                        login(setRedirect, setUrl)
                     }
                 }>START</button>
             </div>

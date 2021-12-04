@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@800&display=swap');
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.playlist-template {
+    width: 100%;
+    display: none;
+}
+.marked {
+    border: 2px#feca1c solid;
+}
+
+.unmarked {
+    border: 2px transparent solid
+}
+.playlist {
+    width: calc(20% - 34px);
+    /* width: 225px; */
+    height: 40vh;
+    /* height: calc(20% - 30px); */
+    display: flex;
+    flex-direction: column;
+    background: #191819;
+    margin: 15px;
+    color: white;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+    justify-content: space-around;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+.clickable:hover {
+    background: #262627;
+    cursor: pointer;
+}
+.playlist-image {
+    max-width: 60%;
+    max-height: 60%;
+}
+#button-next {
+    color: white;
+    display: flex;
+    height: 80vh;
+    flex-direction: column-reverse;
+    position: fixed;
+    justify-content: center;
+    align-items:center;
+    width: 8%;
+    /* border: 2px #feca1c solid; */
+    border: 2px white solid;
+    border-radius:15px; 
+    top: 10vh;
+    /* bottom: 50%; */
+    right: 1%;
+}
+@media (max-width: 1100px) {
+
+    .playlist {
+
+        width: calc(25% - 34px);
+    }
+}
+@media (max-width: 800px) {
+    .playlist {
+        width: calc(33% - 34px)
+    }
+}
+@media (max-width: 600px) {
+    .playlist {
+        width: calc(50% - 34px)
+    }
+}
