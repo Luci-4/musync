@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import Playlist, {PlaylistObj} from './Playlist';
+import Playlist, {PlaylistObj, PlaylistObjTracks, PlaylistProps} from './Playlist';
 import './SpotifyManager.css'
 
+export var playlistsMarks: Array<boolean> = []
+const initPlaylistMarks = (playlists: Array<PlaylistObj>) => {
+    for(let playlist of playlists){
+        playlistsMarks[playlist.key] = false
+    }
+}
 // export type Origin = 'YouTube' | 'Spotify';
-
 const getCode = () => {
     // const code = getJsonFromUrl(window.location.href)
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const code = urlParams.get('code')
+    const code = urlParams.get("code")
+
+    console.log(code)
     return code
 }
 
@@ -20,21 +27,62 @@ const fetchRequest = async (url: String) => {
     return data
 }
 const fetchRequestJson = async (url: String) => {
-    let res = await fetch(`http://localhost:3000/spotify/${url}`)
-    console.log(res)
-    let data = await res.json()
-    console.log(data)
+    let data;
+    try{
+        let res = await fetch(`http://localhost:3000/spotify/${url}`)
+        // console.log(res)
+        data = await res.json()
+        // console.log(data)
+    }
+    catch(error){
+        console.error(error)
+    }
     return data
 }
 const auth = () => {
     console.log("authenticating...")
     const code = getCode()
+    console.log(code)
     const res = fetchRequest(`access/${code}`)
 
     return res
 }
-const goNext = () => {
-    console.log("hello")
+// const getPlaylist = (playlists: Array<) => {
+
+
+// }
+const getMarkedPlaylists = (playlists: Array<PlaylistObj>) => {
+    const markedPlaylists = []
+    for(let playlist of playlists){
+        if(playlistsMarks[playlist.key]){
+            markedPlaylists.push(playlist)
+        }
+    }
+    return markedPlaylists
+}
+const goNext = async (playlists: Array<PlaylistObj>) => {
+    let markedPlaylists: Array<PlaylistObj> = getMarkedPlaylists(playlists)
+    let playlistsWithTracks: Array<PlaylistObjTracks> = [];
+
+    
+    for (let playlist of markedPlaylists){
+        const tracks = await fetchRequestJson(`tracks/${playlist.id}`);
+        const tracksObjects = tracks.items.map((track: any) => {
+            return {
+                artists: track.track.artists.map((artist: any) => artist.name),
+                "name": track.track.name,
+            }
+
+        })
+        playlistsWithTracks.push({
+            ...playlist,
+            "tracks": tracksObjects
+        })
+
+    }
+    console.log(playlistsWithTracks)
+    // console.log(JSON.stringify(playlistsWithTracks))
+    window.localStorage.setItem("playlists", JSON.stringify(playlistsWithTracks))
 }
 export default function SpotifyManager(){
     const [playlists, setPlaylists]: [Array<PlaylistObj>, Function] = useState([])
@@ -43,8 +91,10 @@ export default function SpotifyManager(){
         const initManager = async () => {
             const getPlaylists = async () => {
                 
-                const playlistsTest = []
+                const playlistsElemsTemp = []
+                const playlistsTemp = []
                 const userData = await fetchRequestJson(`playlists`)
+                console.log(userData)
                 let itemIndex = 0;
                 for (let item of userData.items){
                     let itemObj: PlaylistObj = {
@@ -54,27 +104,34 @@ export default function SpotifyManager(){
                         href: item.tracks.href,
                         images: item.images
                     }
-                    itemIndex++;
-
+                    let itemProps: PlaylistProps = {
+                        ...itemObj,
+                        keyProp: itemIndex
+                    }
+                    
                     // playlistsElems.push(<Playlist {...itemObj}/>)
-                    let elem = <Playlist {...itemObj}/>;
-                    playlistsTest.push(elem)
+                    
+                    let elem = <Playlist {...itemProps}/>;
+                    playlistsElemsTemp.push(elem)
+                    playlistsTemp.push(itemObj)
+                    itemIndex++;
                     // setPlaylistsElems([...playlistsElems, elem])
 
-                    setPlaylists([...playlists, itemObj])
                 }
-                setPlaylistsElems(playlistsTest)
+                setPlaylists(playlistsTemp)
+                initPlaylistMarks(playlistsTemp)
+                setPlaylistsElems(playlistsElemsTemp)
             }
             try{
                 await auth();
                 getPlaylists()
-
-
+                
+                
             }catch(error){
                 console.error(error)
             }
-    }
-    initManager()
+        }
+        initManager()
     
 }, [])
 
@@ -86,7 +143,7 @@ return (
                     playlistsElems 
                 }
            </ul>
-           <div id="button-next" onClick={e => {goNext()}}>
+           <div id="button-next" onClick={e => {goNext(playlists)}}>
                 <div id="next">NEXT</div>
                 <div id="arrow">{">"}</div>
            </div>

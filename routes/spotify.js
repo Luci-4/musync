@@ -33,6 +33,7 @@ router.get("/access/:code", async function(req, res) {
       client_id: spotify_my_client_id,
       client_secret: spotify_my_client_secret
   }
+  console.log(data)
   const authRes = axios
     .post(
       url,
@@ -113,19 +114,17 @@ router.get('/user', async function(req, res) {
 router.get("/playlists", async function(req, res) {
   // const user_id = req.params.id;
   // const url = `https://api.spotify.com/v1/users/${my_client_id}/playlists`
-  const url = `https://api.spotify.com/v1/me/playlists`
+  const url = `https://api.spotify.com/v1/me/playlists?limit=50`
   let data;
   const headers = {
     headers: {
       "Authorization": `Bearer ${access_token}`,
     }
   }
-  const params = new URLSearchParams([['limit', 50]]);
   const fetchRes = axios
     .get(
       url,
       headers,
-      {params}
     )
     .then(response => {
       data = response.data;
@@ -183,6 +182,31 @@ router.get('/login', function(req, res) {
     // )
     res.json(res_obj)
     // res.send(redirect_url)
+
+})
+router.get('/tracks/:id', async function(req, res) {
+
+  const playlistID = req.params.id;
+  const url = `https://api.spotify.com/v1/playlists/${playlistID}/tracks?limit=50`
+  let data;
+  const headers = {
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+      'Content-Type': 'application/json'
+    }
+  }
+  const fetchRes = axios
+    .get(
+      url,
+      headers
+    )
+    .then(response => {
+      data = response.data;
+      res.send(data)
+    })
+    .catch(error => {
+      console.error(error)
+    })
 
 })
 
