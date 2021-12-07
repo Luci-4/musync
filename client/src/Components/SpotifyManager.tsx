@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import LoadingBar from './LoadingBar';
+// import LoadingBar from './LoadingBar';
 import Playlist, {PlaylistObj, PlaylistObjTracks, PlaylistProps} from './Playlist';
 import './SpotifyManager.css'
 
@@ -60,11 +62,12 @@ const getMarkedPlaylists = (playlists: Array<PlaylistObj>) => {
     }
     return markedPlaylists
 }
-const goNext = async (playlists: Array<PlaylistObj>) => {
+const goNext = async (playlists: Array<PlaylistObj>, setCurrentDownloadedCount: Function, setTotalToDownload: Function) => {
     let markedPlaylists: Array<PlaylistObj> = getMarkedPlaylists(playlists)
     let playlistsWithTracks: Array<PlaylistObjTracks> = [];
-
     
+    let currentCount= 0
+    setTotalToDownload(markedPlaylists.length)
     for (let playlist of markedPlaylists){
         const tracks = await fetchRequestJson(`tracks/${playlist.id}`);
         const tracksObjects = tracks.items.map((track: any) => {
@@ -72,21 +75,28 @@ const goNext = async (playlists: Array<PlaylistObj>) => {
                 artists: track.track.artists.map((artist: any) => artist.name),
                 "name": track.track.name,
             }
-
+            
         })
         playlistsWithTracks.push({
             ...playlist,
             "tracks": tracksObjects
         })
+        currentCount ++;
+        setCurrentDownloadedCount(currentCount)
 
     }
     console.log(playlistsWithTracks)
     // console.log(JSON.stringify(playlistsWithTracks))
+    // TODO: change storage to browser based not window based
     window.localStorage.setItem("playlists", JSON.stringify(playlistsWithTracks))
 }
 export default function SpotifyManager(){
     const [playlists, setPlaylists]: [Array<PlaylistObj>, Function] = useState([])
     const [playlistsElems, setPlaylistsElems]: [Array<object>, Function] = useState([])
+    const [downloading, setDownloading]: [boolean, Function] = useState(false)
+    const [totalToDownload, setTotalToDownload]: [number, Function] = useState(0)
+    const [currentDownloadedCount, setCurrentDownloadedCount]: [number, Function] = useState(0)
+    
     useEffect(() => {
         const initManager = async () => {
             const getPlaylists = async () => {
@@ -134,19 +144,40 @@ export default function SpotifyManager(){
         initManager()
     
 }, [])
+if(!downloading){
 
-return (
-    <div id="SpotifyManager" className="noselect">
-            
-           <ul id="playlists">
-                {
-                    playlistsElems 
+    return (
+        <div id="SpotifyManager" className="noselect">
+                
+            <ul id="playlists">
+                    {
+                        playlistsElems 
+                    }
+            </ul>
+            <div 
+                id="button-next" 
+                onClick={
+                    e => {
+                        goNext(
+                            playlists, 
+                            setCurrentDownloadedCount, 
+                            setTotalToDownload
+                        );
+                        setDownloading(true)
+                    }
                 }
-           </ul>
-           <div id="button-next" onClick={e => {goNext(playlists)}}>
+            >
+    
                 <div id="next">NEXT</div>
                 <div id="arrow">{">"}</div>
-           </div>
+    
+            </div>
         </div>
+        )
+} else {
+    return (
+        <LoadingBar current={currentDownloadedCount} total={totalToDownload}/>
     )
+}
+
 }

@@ -1,6 +1,6 @@
 import './App.css';
-import Home from './components/Home';
-import SpotifyManager from './components/SpotifyManager'
+import Home from './Components/Home';
+import SpotifyManager from './Components/SpotifyManager'
 
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
 
