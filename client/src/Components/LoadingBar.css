@@ -14,8 +14,10 @@
 .bar {
     height: 30px;
 
-    background: rgb(254,202,28);
-    background: linear-gradient(90deg, rgba(254,202,28,1) 0%, rgba(210,143,0,1) 79%);
+    /* background: rgb(210,143,0);
+    background: linear-gradient(0deg, rgba(210,143,0,1) 0%, rgba(254,202,28,1) 50%, rgba(210,143,0,1) 100%); */
+    background: rgb(179,122,0);
+    background: linear-gradient(0deg, rgba(179,122,0,1) 0%, rgba(254,202,28,1) 50%, rgba(179,122,0,1) 100%);
     display: flex;
     justify-content: center;
     border-top-right-radius: 10px;
