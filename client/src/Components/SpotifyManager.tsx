@@ -1,3 +1,4 @@
+import { url } from 'inspector';
 import React, { useEffect, useState } from 'react';
 import LoadingBar from './LoadingBar';
 // import LoadingBar from './LoadingBar';
@@ -19,6 +20,32 @@ const getCode = () => {
 
     console.log(code)
     return code
+}
+
+const login = async (setRedirect: Function, setUrl: Function, target: string) => {
+    // fetch('/users/hello')
+    // .then(res => res.json()) 
+    // .then(users => console.log(users))
+    console.log("login in")
+    fetch(`/${target}/login/${target}target`)
+    .then(res => res.json())
+    .then(login => {
+        console.log(login)
+        let url: string = login[0]["url"];
+        console.log("login", url)
+        setRedirect(true)
+        
+        setUrl(url)
+        }
+    )
+    .catch(err => {
+        console.error(err)
+    })
+    // const url = await fetchRequest("/spotify/login")
+    // console.log("url is:", url)
+
+    // window.location.href = url;
+    // let res = await fetch(`htt`) 
 }
 
 const fetchRequest = async (url: String) => {
@@ -45,7 +72,7 @@ const auth = () => {
     console.log("authenticating...")
     const code = getCode()
     console.log(code)
-    const res = fetchRequest(`access/${code}`)
+    const res = fetchRequest(`access/spotifymanager/${code}`)
 
     return res
 }
@@ -53,6 +80,11 @@ const auth = () => {
 
 
 // }
+const savePlaylistDataToCookies = (playlists: Array<PlaylistObjTracks>) => {
+    let today = new Date()
+    let expiry = new Date(today.getTime() + 30*24*3600*1000); // for 30 days from now
+    document.cookie= "playlists" + "=" + escape(JSON.stringify(playlists)) + "; path=/; expires=" + expiry.toUTCString()
+}
 const getMarkedPlaylists = (playlists: Array<PlaylistObj>) => {
     const markedPlaylists = []
     for(let playlist of playlists){
@@ -62,6 +94,31 @@ const getMarkedPlaylists = (playlists: Array<PlaylistObj>) => {
     }
     return markedPlaylists
 }
+// const login = async (setRedirect: Function, setUrl: Function, target: string) => {
+//     // fetch('/users/hello')
+//     // .then(res => res.json()) 
+//     // .then(users => console.log(users))
+//     console.log("login in")
+//     fetch(`/${target}/login`)
+//     .then(res => res.json())
+//     .then(login => {
+//         console.log(login)
+//         let url: string = login[0]["url"];
+//         console.log("login", url)
+//         setRedirect(true)
+        
+//         setUrl(url)
+//         }
+//     )
+//     .catch(err => {
+//         console.error(err)
+//     })
+//     // const url = await fetchRequest("/spotify/login")
+//     // console.log("url is:", url)
+
+//     // window.location.href = url;
+//     // let res = await fetch(`htt`) 
+// }
 const goNext = async (playlists: Array<PlaylistObj>, setCurrentDownloadedCount: Function, setTotalToDownload: Function) => {
     let markedPlaylists: Array<PlaylistObj> = getMarkedPlaylists(playlists)
     let playlistsWithTracks: Array<PlaylistObjTracks> = [];
@@ -89,6 +146,7 @@ const goNext = async (playlists: Array<PlaylistObj>, setCurrentDownloadedCount: 
     // console.log(JSON.stringify(playlistsWithTracks))
     // TODO: change storage to browser based not window based
     window.localStorage.setItem("playlists", JSON.stringify(playlistsWithTracks))
+    // savePlaylistDataToCookies(playlistsWithTracks)
 }
 export default function SpotifyManager(){
     const [playlists, setPlaylists]: [Array<PlaylistObj>, Function] = useState([])
@@ -96,7 +154,15 @@ export default function SpotifyManager(){
     const [downloading, setDownloading]: [boolean, Function] = useState(false)
     const [totalToDownload, setTotalToDownload]: [number, Function] = useState(0)
     const [currentDownloadedCount, setCurrentDownloadedCount]: [number, Function] = useState(0)
-    
+    const [redirect, setRedirect] = useState(false)
+    const [url, setUrl] = useState("undefined")
+    if (redirect && url.length > 0){
+        window.location.href = url
+    }
+    console.log(currentDownloadedCount, totalToDownload)
+    if (currentDownloadedCount === totalToDownload  && totalToDownload !== 0){
+        login(setRedirect, setUrl, "youtube")
+    }
     useEffect(() => {
         const initManager = async () => {
             const getPlaylists = async () => {
@@ -154,23 +220,28 @@ export default function SpotifyManager(){
                             playlistsElems 
                         }
                 </ul>
-                <div 
-                    id="button-next" 
-                    onClick={
-                        e => {
-                            goNext(
-                                playlists, 
-                                setCurrentDownloadedCount, 
-                                setTotalToDownload
-                            );
-                            setDownloading(true)
+                <div className="panel">
+                    <div>
+
+                    </div>
+                    <div 
+                        id="button-next" 
+                        onClick={
+                            e => {
+                                goNext(
+                                    playlists, 
+                                    setCurrentDownloadedCount, 
+                                    setTotalToDownload
+                                );
+                                setDownloading(true)
+                            }
                         }
-                    }
-                >
-        
-                    <div id="next">NEXT</div>
-                    <div id="arrow">{">"}</div>
-        
+                    >
+            
+                        <div id="next">CONFIRM</div>
+                        {/* <div id="arrow">{">"}</div> */}
+            
+                    </div>
                 </div>
             </div>
             )

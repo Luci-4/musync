@@ -7,7 +7,7 @@ const login = async (setRedirect: Function, setUrl: Function, target: string) =>
     // .then(res => res.json()) 
     // .then(users => console.log(users))
     console.log("login in")
-    fetch(`/${target}/login`)
+    fetch(`/${target}/login/${target}manager`)
     .then(res => res.json())
     .then(login => {
         console.log(login)

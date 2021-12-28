@@ -9,10 +9,11 @@ const google_api_key = process.env.GOOGLE_API_KEY
 // TODO: setup router in react client and change the redirect to the correct one
 // const redirect_url = '/spotifymanager'
 var access_token;
-const redirect_uri = "http://127.0.0.1:3000/spotifymanager";
+const redirect_uri = "http://127.0.0.1:3000/";
 // const redirect_uri = "http://localhost:3000/spotifymanager"
 // const redirect_uri = "http://127.0.0.1:3000"
-router.get("/access/:code", async function(req, res) {
+router.get("/access/:redirecttarget/:code", async function(req, res) {
+    const redirectTarget = req.params.redirecttarget
     const code = req.params.code;
 
     const url = `https://accounts.spotify.com/api/token`
@@ -29,7 +30,7 @@ router.get("/access/:code", async function(req, res) {
 
       grant_type: "authorization_code",
       code: code,
-      redirect_uri: redirect_uri,
+      redirect_uri: redirect_uri + redirectTarget,
       client_id: spotify_my_client_id,
       client_secret: spotify_my_client_secret
   }
@@ -161,13 +162,14 @@ router.get('/playlist/:id', async function(req, res) {
       console.error(error)
     })
 })
-router.get('/login', function(req, res) {
+router.get('/login/:redirecttarget', function(req, res) {
+    const redirectTarget = req.params.redirecttarget
     var scopes = 'user-read-private playlist-modify-private playlist-read-private user-read-email';
     var redirect_url = 'https://accounts.spotify.com/authorize' +
     '?response_type=code' +
     '&client_id=' + spotify_my_client_id +
     (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
-    '&redirect_uri=' + encodeURIComponent(redirect_uri);
+    '&redirect_uri=' + encodeURIComponent(redirect_uri + redirectTarget);
     // var redirect_url = 'https://accounts.spotify.com/authorize' +
     // '?response_type=code' +
     // '&client_id=' + my_client_id +

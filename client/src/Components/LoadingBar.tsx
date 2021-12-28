@@ -7,10 +7,12 @@ interface LoadingBarProps{
 }
 export default function LoadingBar({current, total}: LoadingBarProps){
     total = total === 0 ? 1 : total;
-    if(Math.round(100*current/total) === 100){
+    console.log(total, current)
+    if(current === total){
+
         // TODO: here link to youtube auth
         // take the url from the props (based on what manager is used there ez)
-        // window.location.href = "https://www.google.com";
+        window.location.href = "http://127.0.0.1:3000/youtubetarget";
     }
     return (
         <div className="LoadingBar">

@@ -48,22 +48,6 @@
     max-width: 60%;
     max-height: 60%;
 }
-#button-next {
-    color: white;
-    display: flex;
-    height: 80vh;
-    flex-direction: column-reverse;
-    position: fixed;
-    justify-content: center;
-    align-items:center;
-    width: 8%;
-    /* border: 2px #feca1c solid; */
-    border: 2px white solid;
-    border-radius:15px; 
-    top: 10vh;
-    /* bottom: 50%; */
-    right: 1%;
-}
 @media (max-width: 1100px) {
 
     .playlist {
