@@ -2,11 +2,12 @@ import './Home.css';
 import {useState} from 'react'
 
 
-const login = async (setRedirect: Function, setUrl: Function) => {
-    fetch('/users/hello')
-    .then(res => res.json()) 
-    .then(users => console.log(users))
-    fetch('/spotify/login')
+const login = async (setRedirect: Function, setUrl: Function, target: string) => {
+    // fetch('/users/hello')
+    // .then(res => res.json()) 
+    // .then(users => console.log(users))
+    console.log("login in")
+    fetch(`/${target}/login`)
     .then(res => res.json())
     .then(login => {
         console.log(login)
@@ -17,6 +18,9 @@ const login = async (setRedirect: Function, setUrl: Function) => {
         setUrl(url)
         }
     )
+    .catch(err => {
+        console.error(err)
+    })
     // const url = await fetchRequest("/spotify/login")
     // console.log("url is:", url)
 
@@ -45,9 +49,14 @@ export default function Home(){
 
                 <button className='start-button' onClick={(e) => 
                     {
-                        login(setRedirect, setUrl)
+                        login(setRedirect, setUrl, "spotify")
                     }
-                }>START</button>
+                }>Spotify</button>
+                <button className='start-button' onClick={(e) => 
+                    {
+                        login(setRedirect, setUrl, "youtube")
+                    }
+                }>Youtube</button>
             </div>
 
         </div>

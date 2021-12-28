@@ -143,41 +143,41 @@ export default function SpotifyManager(){
         }
         initManager()
     
-}, [])
-if(!downloading){
+    }, [])
+    if(!downloading){
 
-    return (
-        <div id="SpotifyManager" className="noselect">
-                
-            <ul id="playlists">
-                    {
-                        playlistsElems 
+        return (
+            <div id="SpotifyManager" className="noselect">
+                    
+                <ul id="playlists">
+                        {
+                            playlistsElems 
+                        }
+                </ul>
+                <div 
+                    id="button-next" 
+                    onClick={
+                        e => {
+                            goNext(
+                                playlists, 
+                                setCurrentDownloadedCount, 
+                                setTotalToDownload
+                            );
+                            setDownloading(true)
+                        }
                     }
-            </ul>
-            <div 
-                id="button-next" 
-                onClick={
-                    e => {
-                        goNext(
-                            playlists, 
-                            setCurrentDownloadedCount, 
-                            setTotalToDownload
-                        );
-                        setDownloading(true)
-                    }
-                }
-            >
-    
-                <div id="next">NEXT</div>
-                <div id="arrow">{">"}</div>
-    
+                >
+        
+                    <div id="next">NEXT</div>
+                    <div id="arrow">{">"}</div>
+        
+                </div>
             </div>
-        </div>
+            )
+    } else {
+        return (
+            <LoadingBar current={currentDownloadedCount} total={totalToDownload}/>
         )
-} else {
-    return (
-        <LoadingBar current={currentDownloadedCount} total={totalToDownload}/>
-    )
-}
+    }
 
 }
