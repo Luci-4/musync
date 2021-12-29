@@ -110,75 +110,73 @@ router.get("/login/:redirecttarget", async function(req, res) {
     }]
     res.json(res_obj)
 // router.get("access:code")
+router.get("/addtoplaylist/:playlistid/:itemid", async function(req, res){
+    const url = "https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet"
+    const playlistId = req.params.playlistid
+    const itemId = req.params.itemid
+    const data = {
+        snippet: {
+            "playlistId": playlistId,
+            "resourceId": {
+                "videoId": itemId,
+                "kind": "youtube#video"
+            }
+        }
+    }
+    const headers = {
+        headers: {
+            "Authorization": "Bearer " + access_token,
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        }
 
-// router.get("search/:query" async function(req, res){
-//     const url = "";
-//     const headers = {
-//         headers: {
-//             Authorization: `Bearer${youtube}`
-//         }
-//     }
-//     const params = {
+    }
+
+    axios
+    .post(
+        url,
+        data,
+        headers
+    )
+    .then(response => {
+        res.send("success")
+    })
+    .catch(error => {
+        console.log(error.response)
+        console.log(playlistId)
+        console.log(itemId)
+    })
+
+})
+router.get("/search/:query", async function(req, res){
+    // const url = "https://www.googleapis.com/youtube/v3/videos";
+    const query = req.params.query
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video`
+    const headers = {
+        headers: {
+            Authorization: `Bearer ${access_token}`,
+            "Accept": "application/json"
+        }
+    }
+    axios
+    .get(
+        url,
+        headers
+    )
+    .then(response => {
+        console.log(response.data.items)
+        res.json([
+            {
+                result: response.data.items[0].id.videoId
+            }
+        ])
         
-//     }
-// })
-// router.get("/create/:title", async function(req, res){
-//     const url = "https://www.googleapis.com/youtube/v3/playlists"
-//     const title = req.params.title
-//     console.log(title)
-//     const data = {
-//         "title": title,
-//     }
-//     res.send("success")
-//     // axios
-//     // .post(
-//     //     url,
-//     //     (new URLSearchParams(data)).toString()
-//     // )
-//     // .then(response => {
-//     //     console.log(response)
-//     //     res.send("success")
-//     // })
-//     // .catch(error => {
-//     //     console.error(error)
-//     // })
-// })
-    // const oauth2Endpoint = "https://accounts.google.com/o/oauth2/v2/auth";
-    // const headers = {"alg":"RS256","typ":"JWT"}
-
-    // const claims = {
-    //     "iss": "761326798069-r5mljlln1rd4lrbhg75efgigp36m78j5@developer.gserviceaccount.com",
-    //     "scope": "https://www.googleapis.com/auth/youtube",
-    //     "aud": "https://oauth2.googleapis.com/token",
-    //     "exp": 1328554385,
-    //     "iat": 1328550785
-    // }
-
-    // const params = {
-    //     "client_id": youtube_my_client_id,
-    //     "redirect_uri": redirect_uri,
-    //     "response_type": "token",
-    //     "scope": "https://www.googleapis.com/auth/youtube",
-    //     "include_granted_scopes": "true",
-    //     "state": "pass-through value"
-    // }
-    // const authRes = axios
-    //     .get(
-    //         oauth2Endpoint,
-    //         (new URLSearchParams(params)).toString()
-    //     )
-    //     .then(response => {
-    //         // console.log(response.status)
-    //         // console.log(response.statusText)
-    //         // console.log(response.headers)
-    //         // console.log(Object.keys(response.config))
-    //         console.log(Object.keys(response.request))
-
-
-    //     })
-    //     .catch(error => {
-    //         console.error(error)
-    //     })
+    })
+    .catch(error => {
+        console.log(error.response)
+        console.log("fucked up search")
+    })
+})
 })
 
 module.exports = router

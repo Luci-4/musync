@@ -13,6 +13,17 @@ const createPlaylist = async (title: string) => {
     let res = await fetchRequst(`createplaylist/`+title)
     let resJson = await res.json()
     console.log(resJson)
+    return resJson
+}
+const searchForTrack = async (query: string) => {
+    let res = await fetchRequst("search/"+query)
+    let resJson = await res.json()
+    console.log(resJson)
+    return resJson
+}
+const addToPlaylist = async(playlistId: string, itemId: string) => {
+    await fetchRequst("addtoplaylist/" + playlistId + "/" + itemId)
+
 }
 const auth = async () => {
     console.log("authenticating")
@@ -53,11 +64,18 @@ export default function YoutubeTarget() {
 
             for(let playlist of PLAYLISTS){
                 // create playlist
-                createPlaylist(playlist.name)
+                let res = await createPlaylist(playlist.name)
+                console.log("created playlist", res)
+                let playlistId = res[0].id;
 
                 for (let track of playlist.tracks){
-                    let all_track_info = `${track.artists.join(" ")} ${track.name}`
-                    console.log(all_track_info)
+                    let query = encodeURIComponent(`${track.artists.join(",")},${track.name.split(" ").join(",")}`)
+                    let result = await searchForTrack(query) 
+                    let videoId = result[0].result;
+                    // TODO: do something about daily quota or just finish up this part
+                    addToPlaylist(playlistId, videoId)
+
+
                 }
             }
         }
