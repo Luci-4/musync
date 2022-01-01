@@ -1,4 +1,5 @@
 var express = require("express")
+const yts = require("yt-search")
 var axios = require("axios").default;
 require("dotenv").config()
 var router = express.Router();
@@ -110,17 +111,20 @@ router.get("/login/:redirecttarget", async function(req, res) {
     }]
     res.json(res_obj)
 // router.get("access:code")
-router.get("/addtoplaylist/:playlistid/:itemid", async function(req, res){
+})
+router.get("/addtoplaylist/:playlistid/:itemid/:position", async function(req, res){
     const url = "https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet"
     const playlistId = req.params.playlistid
     const itemId = req.params.itemid
+    const position = req.params.position
     const data = {
         snippet: {
             "playlistId": playlistId,
             "resourceId": {
                 "videoId": itemId,
                 "kind": "youtube#video"
-            }
+            },
+            "position": parseInt(position)
         }
     }
     const headers = {
@@ -139,6 +143,7 @@ router.get("/addtoplaylist/:playlistid/:itemid", async function(req, res){
         headers
     )
     .then(response => {
+        console.log(response.data)
         res.send("success")
     })
     .catch(error => {
@@ -148,35 +153,17 @@ router.get("/addtoplaylist/:playlistid/:itemid", async function(req, res){
     })
 
 })
+
 router.get("/search/:query", async function(req, res){
     // const url = "https://www.googleapis.com/youtube/v3/videos";
     const query = req.params.query
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video`
-    const headers = {
-        headers: {
-            Authorization: `Bearer ${access_token}`,
-            "Accept": "application/json"
-        }
-    }
-    axios
-    .get(
-        url,
-        headers
-    )
-    .then(response => {
-        console.log(response.data.items)
-        res.json([
-            {
-                result: response.data.items[0].id.videoId
-            }
-        ])
-        
-    })
-    .catch(error => {
-        console.log(error.response)
-        console.log("fucked up search")
-    })
-})
+    const r = await yts(query)
+    // console.log(r)
+    const videos = r.videos
+    // console.log(videos[0])
+    res.json([{
+        result: videos[0].videoId
+    }])
 })
 
 module.exports = router

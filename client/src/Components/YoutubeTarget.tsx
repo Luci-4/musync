@@ -21,8 +21,8 @@ const searchForTrack = async (query: string) => {
     console.log(resJson)
     return resJson
 }
-const addToPlaylist = async(playlistId: string, itemId: string) => {
-    await fetchRequst("addtoplaylist/" + playlistId + "/" + itemId)
+const addToPlaylist = async(playlistId: string, itemId: string, position: number) => {
+    await fetchRequst("addtoplaylist/" + playlistId + "/" + itemId + "/" + `${position}`)
 
 }
 const auth = async () => {
@@ -62,22 +62,26 @@ export default function YoutubeTarget() {
             const PLAYLISTS = JSON.parse(window.localStorage.getItem('playlists') ?? "[]");
             console.log(PLAYLISTS)
 
-            for(let playlist of PLAYLISTS){
-                // create playlist
-                let res = await createPlaylist(playlist.name)
-                console.log("created playlist", res)
-                let playlistId = res[0].id;
+            // for(let playlist of PLAYLISTS){
+            //     // create playlist
+            //     let res = await createPlaylist(playlist.name)
+            //     let playlistId = res[0].id;
+            //     console.log("tracks", playlist.name)
+            //     console.log("track count", playlist.tracks.length)
+            //     for (let [position, track] of playlist.tracks.entries()){
+            //         let query = encodeURIComponent(`${track.artists.join(",")},${track.name.split(" ").join(",")}`)
+            //         console.log("before search", `${track.artists.join(",")},${track.name.split(" ").join(",")}`)
+            //         let result = await searchForTrack(query) 
+            //         console.log("after search", track.name)
+            //         let videoId = result[0].result;
+            //         console.log("found", videoId)
+                    
+            //         addToPlaylist(playlistId, videoId, position)
+            //         console.log("after add", track.name)
 
-                for (let track of playlist.tracks){
-                    let query = encodeURIComponent(`${track.artists.join(",")},${track.name.split(" ").join(",")}`)
-                    let result = await searchForTrack(query) 
-                    let videoId = result[0].result;
-                    // TODO: do something about daily quota or just finish up this part
-                    addToPlaylist(playlistId, videoId)
 
-
-                }
-            }
+            //     }
+            // }
         }
         authWrapper()
     })

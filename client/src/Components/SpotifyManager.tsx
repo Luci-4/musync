@@ -155,7 +155,7 @@ export default function SpotifyManager(){
     const [totalToDownload, setTotalToDownload]: [number, Function] = useState(0)
     const [currentDownloadedCount, setCurrentDownloadedCount]: [number, Function] = useState(0)
     const [redirect, setRedirect] = useState(false)
-    const [url, setUrl] = useState("undefined")
+    const [url, setUrl] = useState("")
     if (redirect && url.length > 0){
         window.location.href = url
     }
