@@ -12,7 +12,7 @@ export default function LoadingBar({current, total}: LoadingBarProps){
 
         // TODO: here link to youtube auth
         // take the url from the props (based on what manager is used there ez)
-        window.location.href = "http://127.0.0.1:3000/youtubetarget";
+        // window.location.href = "http://127.0.0.1:3000/youtubetarget";
     }
     return (
         <div className="LoadingBar">
