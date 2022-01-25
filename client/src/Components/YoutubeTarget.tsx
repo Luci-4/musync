@@ -58,43 +58,41 @@ const auth = async () => {
 }
 export default function YoutubeTarget() {
     const [currentLoadedCount, setCurrentLoadedCount]: [number, Function] = useState(0)
-    const [totalToLoad, setTotalToLoad]: [number, Function] = useState(0);
-    const [loading, setLoading]: [boolean, Function] = useState(false);
-    const [redirect, setRedirect] = useState(false)
-    const [error, setError] = useState(false);
-    const [url, setUrl] = useState("")
-    if (redirect && url.length > 0){
-        window.location.href = url
-    }
-    if (currentLoadedCount === totalToLoad && totalToLoad !==0){
-        setRedirect(true)
-    }
-    useEffect(() => {
-        const authWrapper = async () => {
-            await auth()
-            
-            const PLAYLISTS: PlaylistObjTracks[] = JSON.parse(window.localStorage.getItem('playlists') ?? "[]");
-
-            const total = PLAYLISTS.reduce(
+    const PLAYLISTS: PlaylistObjTracks[] = JSON.parse(window.localStorage.getItem("playlists") ?? "[]");
+    const [totalToLoad, setTotalToLoad]: [number, Function] = useState(PLAYLISTS.reduce(
                 (
                     accumulator, 
                     p: PlaylistObjTracks
                 ) => accumulator+p.tracks.length, 
                 0
-                );
-            setTotalToLoad(total);
+    ));
+
+    const [loading, setLoading]: [boolean, Function] = useState(false);
+    const [redirect, setRedirect] = useState(false)
+    const [error, setError] = useState(false);
+    const [url, setUrl] = useState("")
+    if (redirect && mainUrl.length > 0){
+        window.location.href = mainUrl;
+    }
+    useEffect(() => {
+        const authWrapper = async () => {
+            await auth()
+            
             setLoading(true)
             let current = 0
             for(let playlist of PLAYLISTS){
                 // create playlist
                 let res = await createPlaylist(playlist.name);
                 console.log(res)
-                if(!res.OK){
+                if(!res[0].ok){
                     setError(true)
                     break;
                 }
+                else{
+                    setError(false)
+                }
                 let playlistId = res[0].id;
-                // for (let [position, track]:[number,TrackObj] of playlistTracksEntries){
+                // TODO: fix bug with not setting '?' char in playlist title (for example pigeon? -> pigeon)
                 for (let position = 0; position < playlist.tracks.length; position++){
                     const track = playlist.tracks[position];
                     let query = encodeURIComponent(`${track.artists.join(",")},${track.name.split(" ").join(",")}`)
@@ -109,11 +107,14 @@ export default function YoutubeTarget() {
 
                 }
             }
+            // TODO add something to signal the error if the condition is false (idk why would it be, but i guess might make sense)
+            if (current === totalToLoad && totalToLoad !==0){
+                console.log("redirect is now true")
+                setRedirect(true)
+            }
         }
         
         authWrapper()
-        // TODO: fix the infinite refresh bug
-        setUrl(mainUrl)
     }, [])
     if(error){
 

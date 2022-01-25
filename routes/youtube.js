@@ -67,7 +67,7 @@ router.get("/createplaylist/:title", async function(req, res) {
 
         res.json([
             {
-                OK: true,
+                ok: "true",
                 etag: response.data.etag,
                 id: response.data.id
 
@@ -79,11 +79,11 @@ router.get("/createplaylist/:title", async function(req, res) {
         console.log("fucked")
         console.log(Object.keys(error))
         console.log(error.response)
-        res.status(200).json(
-            {
-                OK: false,
+        res.json(
+            [{
+                ok: "false",
                 message: "Could not perform the action because the daily google api quota has been exceeded"
-            }
+            }]
         )
         // console.log(error.config.data)
     })
