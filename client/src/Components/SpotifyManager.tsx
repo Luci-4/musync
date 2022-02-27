@@ -4,7 +4,7 @@ import LoadingBar from './LoadingBar';
 // import LoadingBar from './LoadingBar';
 import Playlist, {PlaylistObj, PlaylistObjTracks, PlaylistProps} from './Playlist';
 import './SpotifyManager.css'
-
+var access_token: string; 
 export var playlistsMarks: Array<boolean> = []
 const initPlaylistMarks = (playlists: Array<PlaylistObj>) => {
     for(let playlist of playlists){
@@ -68,6 +68,7 @@ const fetchRequestJson = async (url: String) => {
     }
     return data
 }
+
 const auth = () => {
     console.log("authenticating...")
     const code = getCode()
@@ -94,31 +95,6 @@ const getMarkedPlaylists = (playlists: Array<PlaylistObj>) => {
     }
     return markedPlaylists
 }
-// const login = async (setRedirect: Function, setUrl: Function, target: string) => {
-//     // fetch('/users/hello')
-//     // .then(res => res.json()) 
-//     // .then(users => console.log(users))
-//     console.log("login in")
-//     fetch(`/${target}/login`)
-//     .then(res => res.json())
-//     .then(login => {
-//         console.log(login)
-//         let url: string = login[0]["url"];
-//         console.log("login", url)
-//         setRedirect(true)
-        
-//         setUrl(url)
-//         }
-//     )
-//     .catch(err => {
-//         console.error(err)
-//     })
-//     // const url = await fetchRequest("/spotify/login")
-//     // console.log("url is:", url)
-
-//     // window.location.href = url;
-//     // let res = await fetch(`htt`) 
-// }
 const goNext = async (playlists: Array<PlaylistObj>, setCurrentDownloadedCount: Function, setTotalToDownload: Function) => {
     let markedPlaylists: Array<PlaylistObj> = getMarkedPlaylists(playlists)
     let playlistsWithTracks: Array<PlaylistObjTracks> = [];
@@ -126,7 +102,7 @@ const goNext = async (playlists: Array<PlaylistObj>, setCurrentDownloadedCount: 
     let currentCount= 0
     setTotalToDownload(markedPlaylists.length)
     for (let playlist of markedPlaylists){
-        const tracks = await fetchRequestJson(`tracks/${playlist.id}`);
+        const tracks = await fetchRequestJson(`${access_token}/tracks/${playlist.id}`);
         const tracksObjects = tracks.items.map((track: any) => {
             return {
                 artists: track.track.artists.map((artist: any) => artist.name),
@@ -169,7 +145,7 @@ export default function SpotifyManager(){
                 
                 const playlistsElemsTemp = []
                 const playlistsTemp = []
-                const userData = await fetchRequestJson(`playlists`)
+                const userData = await fetchRequestJson(`${access_token}/playlists`)
                 console.log(userData)
                 let itemIndex = 0;
                 for (let item of userData.items){
@@ -199,10 +175,8 @@ export default function SpotifyManager(){
                 setPlaylistsElems(playlistsElemsTemp)
             }
             try{
-                await auth();
+                access_token = await auth();
                 getPlaylists()
-                
-                
             }catch(error){
                 console.error(error)
             }

@@ -5,10 +5,10 @@ require("dotenv").config()
 const router = express.Router();
 const youtube_my_client_id = process.env.YOUTUBE_MY_CLIENT_ID;
 const redirect_uri = "http://127.0.0.1:3000/"
-var access_token = undefined;
 
-router.get("/createplaylist/:title", async function(req, res) {
+router.get("/:accesstoken/createplaylist/:title", async function(req, res) {
     const title = req.params.title
+    const access_token = req.params.accesstoken
     const url = `https://www.googleapis.com/youtube/v3/playlists?part=snippet%2Cstatus`
     const data = {
         snippet: {
@@ -54,11 +54,6 @@ router.get("/createplaylist/:title", async function(req, res) {
     })
 })
 
-router.get("/access/:token", async function(req, res) {
-    access_token = req.params.token
-    res.send()
-})
-
 router.get("/login/:redirecttarget", async function(req, res) {
     const redirectTarget = req.params.redirecttarget
     
@@ -76,11 +71,12 @@ router.get("/login/:redirecttarget", async function(req, res) {
     res.json(res_obj)
 })
 
-router.get("/addtoplaylist/:playlistid/:itemid/:position", async function(req, res){
+router.get("/:accesstoken/addtoplaylist/:playlistid/:itemid/:position", async function(req, res){
     const url = "https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet"
     const playlistId = req.params.playlistid
     const itemId = req.params.itemid
     const position = req.params.position
+    const access_token = req.params.accesstoken
     const data = {
         snippet: {
             "playlistId": playlistId,

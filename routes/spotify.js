@@ -38,8 +38,8 @@ router.get("/access/:redirecttarget/:code", async function(req, res) {
       headers
     )
     .then(response => {
-      access_token = response.data.access_token;
-      res.send("success")
+      const access_token = response.data.access_token;
+      res.send(access_token)
     })
     .catch(error => {
       console.error(error)
@@ -52,8 +52,9 @@ router.get('/', function (req, res) {
     res.status(200).send("hello there");
 })
 
-router.get('/user', async function(req, res) {
+router.get('/:accesstoken/user', async function(req, res) {
   // TODO: it wont work without auth token or something, 
+  const access_token = req.params.accesstoken;
   console.log(access_token)
   let data;
   if(access_token){
@@ -83,8 +84,9 @@ router.get('/user', async function(req, res) {
   }
 })
 
-router.get("/playlists", async function(req, res) {
+router.get("/:accesstoken/playlists", async function(req, res) {
   const url = `https://api.spotify.com/v1/me/playlists?limit=50`
+  const access_token = req.params.accesstoken;
   let data;
   const headers = {
     headers: {
@@ -107,9 +109,10 @@ router.get("/playlists", async function(req, res) {
     })
 })
 
-router.get('/playlist/:id', async function(req, res) {
+router.get('/:accesstoken/playlist/:id', async function(req, res) {
   
   const playlist_id = req.params.id;
+  const access_token = req.params.accesstoken;
   const url = `https://api.spotify.com/v1/playlists/${playlist_id}`
   let data;
   const headers = {
@@ -146,9 +149,10 @@ router.get('/login/:redirecttarget', function(req, res) {
     res.json(res_obj)
 })
 
-router.get('/tracks/:id', async function(req, res) {
+router.get('/:accesstoken/tracks/:id', async function(req, res) {
 
   const playlistID = req.params.id;
+  const access_token = req.params.accesstoken;
   const url = `https://api.spotify.com/v1/playlists/${playlistID}/tracks?limit=50`
   let data;
   const headers = {
